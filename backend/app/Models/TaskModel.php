@@ -42,16 +42,28 @@ class TaskModel
 
     public function update($id, $data)
     {
+        $allowedFields = ['title', 'description', 'status', 'due_date'];
+        $fields = [];
+        $params = [];
+
+        foreach ($allowedFields as $field) {
+            if (array_key_exists($field, $data)) {
+                $fields[] = "{$field} = ?";
+                $params[] = $data[$field];
+            }
+        }
+
+        if (empty($fields)) {
+            return 0;
+        }
+
+        $setClause = implode(', ', $fields);
+        $params[] = $id;
+
         $stmt = $this->pdo->prepare(
-            "UPDATE tasks SET title = ?, description = ?, status = ?, due_date = ? WHERE id = ?"
+            "UPDATE tasks SET {$setClause} WHERE id = ?"
         );
-        $stmt->execute([
-            $data['title'],
-            $data['description'],
-            $data['status'],
-            $data['due_date'] ?? null,
-            $id
-        ]);
+        $stmt->execute($params);
         return $stmt->rowCount();
     }
 
