@@ -92,7 +92,6 @@ function App() {
   const pendingTasks = tasks
     .filter(task => task.status === 'pending')
     .sort((a, b) => {
-      // Tarefas sem data de vencimento vão para o final da lista
       if (!a.due_date) return 1;
       if (!b.due_date) return -1;
       return new Date(a.due_date) - new Date(b.due_date);
@@ -101,7 +100,6 @@ function App() {
   const completedTasks = tasks
     .filter(task => task.status === 'completed')
     .sort((a, b) => {
-      // Ordena as concluídas pela mais recente primeiro
       return new Date(b.updated_at) - new Date(a.updated_at);
     });
 
@@ -109,23 +107,27 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>Gerenciador de Tarefas</h1>
-        {!isFormVisible && <button onClick={handleNewTaskClick} className="btn-new">Nova Tarefa</button>}
       </header>
       <main>
         {isFormVisible ? (
-          <TaskForm 
+          <TaskForm
             onSave={handleSaveTask}
             onCancel={handleCancelForm}
             task={currentTask}
           />
         ) : (
-          <TaskList 
-            pendingTasks={pendingTasks}
-            completedTasks={completedTasks} 
-            onEdit={handleEditClick} 
-            onDelete={handleDeleteTask}
-            onToggleStatus={toggleTaskStatus}
-          />
+          <>
+            <TaskList
+              pendingTasks={pendingTasks}
+              completedTasks={completedTasks}
+              onEdit={handleEditClick}
+              onDelete={handleDeleteTask}
+              onToggleStatus={toggleTaskStatus}
+            />
+            <div className="new-task-button-container">
+              <button onClick={handleNewTaskClick} className="btn btn-primary btn-lg">Nova Tarefa</button>
+            </div>
+          </>
         )}
       </main>
     </div>
